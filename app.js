@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+const dbConection = require('./database/db');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,4 +39,38 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+console.log(dbConection)
 module.exports = app;
+
+
+// const express = require('express');
+// const db = require('./database/db');
+// const Product = require('./models/productModel');
+
+// const app = express();
+// app.use(express.json());
+
+// app.get('/models/productModel', async (req, res) => {
+//     try {
+//         const products = await Product.find();
+//         res.json(products);
+//     } catch (err) {
+//         res.status(500).json({ message: err.message });
+//     }
+// });
+
+// app.post('/models/productModel', async (req, res) => {
+//     const product = new Product(req.body);
+//     try {
+//         const newProduct = await product.save();
+//         res.status(201).json(newProduct);
+//     } catch (err) {
+//         res.status(400).json({ message: err.message });
+//     }
+// });
+
+
+// const PORT = 3000;
+// app.listen(PORT, () => {
+//     console.log(`Servidor en ejecucion en el puerto ${PORT}`);
+// });
