@@ -15,4 +15,3 @@ app.listen(port, () =>{
 })
 
 dbConnect.conectar().catch(console.dir)
-//dbConnect()
