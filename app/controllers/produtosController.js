@@ -1,3 +1,23 @@
+const model = require('../../models/productModel');
+
 exports.getData = (req, res) => {
-    res.send({data: 'Esto viene desde Ruta productos'})
+
+    try {
+        const arrayProducts = model.find()
+        console.log(arrayProducts)
+    } catch (error) {
+        console.log(error)
+    }
+}
+    // {
+    //     // model.find({}, (err, docs) => {
+    //     //     res.send({
+    //     //         docs
+    //     //     })
+    //     // })
+    // }
+
+exports.insertData = (req, res) => {
+    const data = req.body
+    res.send({data})
 }

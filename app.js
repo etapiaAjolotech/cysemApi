@@ -5,8 +5,17 @@ const port = process.env.PORT || 3000;
 const dbConnect = require('./config/db')
 const userRouter = require('./app/routes/users');
 const productRouter = require('./app/routes/productos');
+const bodyParser = require("body-parser");
 
+app.use(bodyParser.json({
+    limit:'20mb'
+}))
 
+app.use(bodyParser.urlencoded({
+    limit: '20mb',
+    extended: true
+})
+)
 app.use(userRouter)
 app.use(productRouter)
 
