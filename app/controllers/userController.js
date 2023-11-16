@@ -1,11 +1,15 @@
-const model = require('../models/userModel')
+const User = require('../../models/userModel')
 
 
 // Obtener Datos de usuarios GET method
 exports.getData = (req, res) => {
+
+    
     try {
-        const arrayUser = model.find()
+        const arrayUser = User.find()
         console.log(arrayUser)
+        //console.log(req);
+        //console.log(res);
     }catch (error) {
         console.log(error)
     }
@@ -23,6 +27,15 @@ exports.getData = (req, res) => {
 // res - responsive
 
 exports.inserData = (req, res) => {
-    const data = req.body
-    res.send({data})
+
+    try{
+        const data = req.body
+        model.create(data)
+    }catch{
+
+    }
+    /*const data = req.body
+    model.create(data, (err, docs) => {
+        res.send({data:docs})
+    })*/
 }
