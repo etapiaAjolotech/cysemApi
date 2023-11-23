@@ -1,41 +1,53 @@
-const User = require('../../models/userModel')
+const { v1: uuidv1 } = require('uuid');
+const {response, request} = require('express');
+const bcryptjs = require('bcryptjs');
+const User = require('../../models/userModel');
+
+
 
 
 // Obtener Datos de usuarios GET method
-exports.getData = (req, res) => {
+const getData = (req, res) => {
 
     
     try {
         const arrayUser = User.find()
         console.log(arrayUser)
+        res.json(arrayUser);
         //console.log(req);
         //console.log(res);
     }catch (error) {
         console.log(error)
     }
-
-    /*
-    model.find({}, (err, docs) => {
-        res.send({
-            docs
-        })
-    })*/
 }
 
 // Insertar Datos de usuarios POST method
 // req - require
 // res - responsive
 
-exports.inserData = (req, res) => {
+const inserData = async (req, res = response) => {
 
-    try{
-        const data = req.body
-        model.create(data)
-    }catch{
+    const {id, userName, email, password, rol, estado, phone} = req.body;
+    const usuario = new User({id, userName, email, password, rol, estado, phone});
 
-    }
-    /*const data = req.body
-    model.create(data, (err, docs) => {
-        res.send({data:docs})
-    })*/
+    //Se agrega ID con UUID
+    usuario.id = uuidv1();
+    
+
+    //Encriptar la constraseña
+    const salt = bcryptjs.genSaltSync();
+    usuario.password = bcryptjs.hashSync(password, salt);
+
+
+    // Guardar el objeto en la BD
+    await usuario.save();
+    
+        res.json({
+            usuario
+        })
+}
+
+module.exports = {
+    inserData,
+    getData
 }
