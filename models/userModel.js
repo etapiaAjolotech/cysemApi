@@ -6,7 +6,6 @@ const userShema = Schema({
     userName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    //confirmPassword: { type: String, required: true },
     phone: { type: Number, required: true },
     rol: { type: String, required: true, emun: ['ADMIN_ROLE', 'USER_ROLE']},
     estado: {type: Boolean, default: true}

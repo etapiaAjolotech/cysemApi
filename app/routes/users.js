@@ -12,12 +12,11 @@ router.post('/',[
   check('email').custom(emailExiste),
   check('password', 'El password debe contener mas de 6 letras').isLength({min: 6}),
   check('phone', 'El telefono es requerido').not().isEmpty(),
-  //check('rol', 'No es un rol válido').isIn(['ADMIN_ROLE', 'USER_ROLE']),
   check('rol').custom(rolValido),
   validarCampos
 ] , controller.inserData)
-//router.put('/', controller)
-//router.delete('/', controller)
+router.put('/')
+router.delete('/')
 
 
 

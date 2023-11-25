@@ -12,10 +12,7 @@ const getData = (req, res) => {
     
     try {
         const arrayUser = User.find()
-        console.log(arrayUser)
         res.json(arrayUser);
-        //console.log(req);
-        //console.log(res);
     }catch (error) {
         console.log(error)
     }
