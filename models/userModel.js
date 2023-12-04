@@ -1,15 +1,19 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const {Schema, model} = require('mongoose');
 
-const userShema = new Schema({
+
+const userShema = Schema({
+    id: {type: String, require: true},
     userName: { type: String, required: true },
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    confirmPassword: { type: String, required: true },
     phone: { type: Number, required: true },
-    company: { type: String, required: true},
+    rol: { type: String, required: true, emun: ['ADMIN_ROLE', 'USER_ROLE']},
+    estado: {type: Boolean, default: true}
 });
 
-const User = mongoose.model('User', userShema);
+userShema.methods.toJSON = function() {
+    const {__v, password, ...user} = this.toObject();
+    return user
+}
 
-module.exports = User;
+module.exports = model('Usuario', userShema);
