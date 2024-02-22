@@ -18,7 +18,7 @@ const cargarArchivo = async (req = request, res = response) => {
     }
 
     try{
-        await Producto.deleteMany({estado: true});
+        await Producto.deleteMany({ $or :[{estado: true}, {estado: false}]});
         const archivoCargado = await subirArchivo(req.files);
         
         const workbook = XLSX.readFile(archivoCargado);
@@ -27,8 +27,8 @@ const cargarArchivo = async (req = request, res = response) => {
         const dataExcel = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
 
         for(const itemFile of dataExcel) {
-            const {codigoProducto, descripcion, marca, precio, disponibilidad} = itemFile;
-            const producto = new Producto({codigoProducto, descripcion, marca, precio, disponibilidad});
+            const {codigoProducto, description, marca, precio, disponibilidad} = itemFile;
+            const producto = new Producto({codigoProducto, description, marca, precio, disponibilidad});
             await producto.save();
         }
         const totales = await Producto.countDocuments();
