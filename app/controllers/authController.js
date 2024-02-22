@@ -28,23 +28,44 @@ const login = async(req, res = response) => {
             });
         }
 
+        //Comprobar si el usuario esta confirmado
+        if(!usuario.confirmado){
+            const error = new Error('El usuario no esta confirmado');
+            return res.status(404).json({msg: error.message})
+        }
+
         // Verificar la contraseña
 
-        const validPassword = bcryptjs.compareSync(password, usuario.password );
+        if(await usuario.comprobarPassword(password)){
+            const token = await generarJWT(usuario.id)
+            res.json({
+                msg: 'Login Ok',
+                _id: usuario._id,
+                id: usuario.id,
+                userName: usuario.userName,
+                email: usuario.email,
+                token: token
+            })
+        }else{
+            const error = new Error('El password no es correcto');
+            return res.status(403).json({msg: error.message})
+        }
+
+        /*const validPassword = bcryptjs.compareSync(password, usuario.password );
         if(!validPassword){
             return res.status(400).json({
                 msg: 'Usuario / password no son correctos - password: false '
             });
-        }
+        }*/
 
         //Generar el JWT
-        const token = await generarJWT(usuario.id)
+       /* const token = await generarJWT(usuario.id)
 
         res.json({
             msg: "Login Ok",
             usuario,
             token
-        })
+        })*/
 
     } catch (error){
         console.log(error)

@@ -36,6 +36,9 @@ router.delete('/:id', [
   validarCampos
 ], controller.delteData)
 
+router.get('/confirmar/:token', controller.confirmar);
+router.post('/olvide-password', controller.olvidePassword)
+router.route('/olvide-password/:token').get(controller.comprobarToken).post(controller.nuevoPassword);
 
 
 

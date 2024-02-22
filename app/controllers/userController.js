@@ -1,7 +1,8 @@
 const { v1: uuidv4 } = require('uuid');
 const {response, request} = require('express');
-const bcryptjs = require('bcryptjs');
 const User = require('../../models/userModel');
+const {generarId} = require('../../helpers/generarID')
+const {emailRegistro} = require('../../helpers/emails')
 
 
 
@@ -37,17 +38,24 @@ const inserData = async (req, res = response) => {
     
     //Se agrega ID con UUID
     usuario.id = uuidv4();
-    
 
-    //Encriptar la constraseña
-    const salt = bcryptjs.genSaltSync();
-    usuario.password = bcryptjs.hashSync(password, salt);
+    usuario.token = generarId();
 
 
     // Guardar el objeto en la BD
-    await usuario.save();
+    try{
+        await usuario.save();
+        emailRegistro({
+            userName: usuario.userName,
+            email: usuario.email,
+            token: usuario.token
+        })
+    }catch(error){
+        console.log(error)
+    }
     
         res.json({
+            msg: 'Usuario creado correctamente, revisa tu email para confirmar tu cuenta',
             usuario
         })
 }
@@ -78,9 +86,88 @@ const delteData = async(req, res) => {
     res.json({usuario})
 }
 
+const confirmar = async(req = request, res = response) => {
+    const {token} = req.params;
+
+    const usuarioToken = await User.findOne({token});
+
+    if(!usuarioToken){
+        const error = new Error('El token no es valido');
+        return res.status(403).json({ msg: error.message});
+    }
+
+    try{
+        usuarioToken.confirmado = true,
+        usuarioToken.token = ''
+        await usuarioToken.save();
+        res.json({msg: 'Usuario confirmado correctamente'});
+    }catch (error){
+        console.log(error)
+    }
+}
+
+const olvidePassword = async(req, res) => {
+    const {email} = req.body;
+
+    //Validar si el usuario existe
+    const usuarioExiste = await User.findOne({email});
+
+    if(!usuarioExiste){
+        const error = new Error('El usuario no esta registrado');
+        return res.status(404).json({msg: error.message});
+    }
+
+    try{
+        usuarioExiste.token = generarId();
+        await usuarioExiste.save();
+        res.json({msg: 'Hemos enviado un correo a tu bajeda para confirmar tu cuenta'});
+    }catch(error){
+        console.log(error)
+    }
+}
+
+const comprobarToken = async(req, res) => {
+    const {token} = req.params;
+
+    const tokenValido = await User.findOne({token});
+
+    if(tokenValido){
+        res.json({msg: 'Token Valido'})
+    }else{
+        const error = new Error('El token no es valido');
+        return res.status({msg: error.message})
+    }
+}
+
+const nuevoPassword = async(req, res) => {
+    const {token} = req.params;
+    const {password} = req.body;
+
+    const usuarioToken = await User.findOne({token});
+
+    if(usuarioToken){
+        usuarioToken.password = password;
+        usuarioToken.token = '';
+        try{
+            await usuarioToken.save()
+        }catch(error){
+            console.log(error);
+        }
+        res.json({msg: 'El password se cambio con exito'});
+    }else {
+        const error = new Error('El token no es valido');
+        return res.status(404).json({msg: error.message})
+    }
+
+}
+
 module.exports = {
     getData,
     inserData,
     updateData,
-    delteData
+    delteData,
+    confirmar,
+    olvidePassword,
+    comprobarToken,
+    nuevoPassword
 }
